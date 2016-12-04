@@ -14519,7 +14519,9 @@ IiIiIiIiIiIiIiIiIiIiIiIiIoHs/wOSRUUBJ65zvgAAAABJRU5ErkJggg==
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Answer: </strong> The k-fold cross-validation training technique splits the data into many folds so that every fold will serve as the test set once. Shuffling is also available in k-fold to lesson the impact of any patterns in the data sequences. The k-fold technique helps maximise the usage of all data points for testing training and it minimises the possibility of a systematic error between the train and test sets in a fixed train-test split.</p>
+<p><strong>Answer: </strong> 
+The k-fold cross-validation training technique splits the data into many folds so that every fold will serve as the test set once. when 1 fold is held out as the test set, the k-1 folds left will be used for training. This process is then repeated for the other k-1 folds respectively. There will thus be k iterations in total where the test and training sets for each iteration is different. Shuffling is also available in k-fold to lesson the impact of any patterns in the data sequences.</p>
+<p>The k-fold technique helps maximise the usage of all data points for testing training and it minimises the possibility of a systematic error between the train and test sets in a fixed train-test split. As the grid search technique aims to find the parameter combinations which maximizes the cross-validation score, overfitting could be lessoned using k-fold when constructing the cross-validation estimator, so that the parameters picked with grid search are more optimal.</p>
 
 </div>
 </div>
@@ -14743,8 +14745,15 @@ Predicted selling price for Client 3&#39;s home: $888,720.00
 <p><strong>Answer: </strong> 
 For Client 1's home, I would recommend 415,800.
 For Client 2's home, I would recommend 236,478.
-For Client 3's home, I would recommend 888,720.
-They do seem reasonable.</p>
+For Client 3's home, I would recommend 888,720.</p>
+<p>As previously calculated,</p>
+<p>Minimum price: $105,000.00;
+Maximum price: $1,024,800.00;
+Mean price: $454,342.94;
+Median price $438,900.00;
+Standard deviation of prices: $165,171.13.</p>
+<p>All of the values recommended are within the range between the minimum and maximum prices. In terms of neighborhood poverty level(LSTAT), the house with highest LSTAT has the lowest predicted price while the one with the lowest LSTAT has the highest. As for student-teacher ratio of nearby schools(PTRATIO), the house with lowest PTRATIO has the highest predicted price while the one with the highest LSTAT has the lowest.</p>
+<p>As all of these observations are consistent with the trends predicted in previous questions, the prices recommended do seem reasonable.</p>
 
 </div>
 </div>
