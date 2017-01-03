@@ -75,7 +75,7 @@ class Environment(object):
 
         # Primary agent and associated parameters
         self.primary_agent = None  # to be set explicitly
-        self.enforce_deadline = False
+        self.enforce_deadline = True
 
         # Trial data (updated at the end of each trial)
         self.trial_data = {
@@ -167,6 +167,7 @@ class Environment(object):
     
             agent.reset(destination=(destination if agent is self.primary_agent else None), testing=testing)
             if agent is self.primary_agent:
+                
                 # Reset metrics for this trial (step data will be set during the step)
                 self.trial_data['testing'] = testing
                 self.trial_data['initial_deadline'] = deadline
