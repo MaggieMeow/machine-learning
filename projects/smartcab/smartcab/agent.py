@@ -8,7 +8,7 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
+    def __init__(self, env, learning=True, epsilon=1.0, alpha=0.3, trial_count = 1):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
@@ -23,9 +23,9 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
+        self.trial_count =trial_count
 
-
-    def reset(self, destination=None, testing=True):
+    def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
             'testing' is set to True if testing trials are being used
             once training trials have completed. """
@@ -39,6 +39,14 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+        
+
+        a = 0.1 # Tune a where 0<a<1
+        self.epsilon = math.exp(float(-1) * a * self.trial_count)
+
+        if self.learning:
+            self.trial_count += 1
+
 
         return None
 
@@ -60,13 +68,13 @@ class LearningAgent(Agent):
         #   If it is not, create a dictionary in the Q-table for the current 'state'
         #   For each action, set the Q-value for the state-action pair to 0
         
-        state = None
+        state = (waypoint, inputs['light'], inputs['oncoming'])
 
         return state
 
 
     def get_maxQ(self, state):
-        """ The get_max_Q function is called when the agent is asked to find the
+        """ The get_maxQ function is called when the agent is asked to find the
             maximum Q-value of all actions based on the 'state' the smartcab is in. """
 
         ########### 
@@ -74,8 +82,8 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
 
-        maxQ = None
-
+        maxQ = max(self.Q[state].values())
+        #print("maxQ is {}".format(maxQ))
         return maxQ 
 
 
@@ -88,6 +96,12 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
+
+        if state not in self.Q.keys():
+            self.Q[state] = dict()
+
+            for action in self.valid_actions:
+                self.Q[state][action] = 0.0
 
         return
 
@@ -105,11 +119,21 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # When not learning, choose a random action
+        if self.learning:
+            if self.epsilon > random.random():
+                action = random.choice(self.valid_actions)
 
-        action = random.sample(self.valid_actions, 1)[0]
+            else:
+                for a in self.valid_actions:
+                    if self.Q[state][a] == self.get_maxQ(state):
+                        action = a
+           
         # When learning, choose a random action with 'epsilon' probability
 
         #   Otherwise, choose an action with the highest Q-value for the current state
+        else:
+             action = random.choice(self.valid_actions)
+
  
         return action
 
@@ -125,6 +149,10 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
 
+        if self.learning:
+            currentQ = self.Q[state][action]
+            self.Q[state][action] = reward * self.alpha + currentQ * (1 - self.alpha)
+
         return
 
 
@@ -138,6 +166,8 @@ class LearningAgent(Agent):
         action = self.choose_action(state)  # Choose an action
         reward = self.env.act(self, action) # Receive a reward
         self.learn(state, action, reward)   # Q-learn
+        
+        
 
         return
         
