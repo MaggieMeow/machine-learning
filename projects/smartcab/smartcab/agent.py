@@ -39,12 +39,18 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+
+        if testing:
+            a = 0
+            self.epsilon = 0
         
+        else:
+            #a = 0.5 # Tune a where 0<a<1
+            a=0.1
+            self.epsilon = math.exp(float(-1) * a * self.trial_count)
 
-        a = 0.1 # Tune a where 0<a<1
-        self.epsilon = math.exp(float(-1) * a * self.trial_count)
-
-        if self.learning:
+            #self.epsilon = self.epsilon - 0.05
+            
             self.trial_count += 1
 
 
@@ -96,12 +102,12 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
+        if self.learning:
+            if state not in self.Q.keys():
+                self.Q[state] = dict()
 
-        if state not in self.Q.keys():
-            self.Q[state] = dict()
-
-            for action in self.valid_actions:
-                self.Q[state][action] = 0.0
+                for action in self.valid_actions:
+                    self.Q[state][action] = 0.0
 
         return
 
@@ -124,9 +130,13 @@ class LearningAgent(Agent):
                 action = random.choice(self.valid_actions)
 
             else:
+                pos_action = []
+                maxQ = self.get_maxQ(state)
                 for a in self.valid_actions:
-                    if self.Q[state][a] == self.get_maxQ(state):
-                        action = a
+                    if self.Q[state][a] == maxQ:
+                        pos_action.append(a)
+
+                action = random.choice(pos_action)
            
         # When learning, choose a random action with 'epsilon' probability
 
